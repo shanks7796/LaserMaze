@@ -12,8 +12,8 @@ namespace PioneerCodingProject.Factories
     {
         private const string LocationPattern = @"^[0-9,0-9]*";
         private const string OrientationPattern = @"[a-zA-Z]+";
-        private Regex LocationRegex;
-        private Regex OrientationRegex;
+        private readonly Regex _locationRegex;
+        private readonly Regex _orientationRegex;
 
         public enum MirrorType
         {
@@ -30,19 +30,27 @@ namespace PioneerCodingProject.Factories
 
         public MirrorFactory()
         {
-            LocationRegex = new Regex(LocationPattern);
-            OrientationRegex = new Regex(OrientationPattern);
+            _locationRegex = new Regex(LocationPattern);
+            _orientationRegex = new Regex(OrientationPattern);
         }
 
         public Mirror BuildMirror(string mirrorDef)
         {
-            Match location = LocationRegex.Match(mirrorDef);
-            Match orientation = OrientationRegex.Match(mirrorDef);
+            Match location = _locationRegex.Match(mirrorDef);
+            Match orientation = _orientationRegex.Match(mirrorDef);
+
+            if(location.Groups.Count == 0 || location.Groups[0].Value.Length != 3) 
+            {
+                throw new Exception("Invalid Mirror Definition.  Please Check Definition file.");
+            }
+
+            int xLoc = Convert.ToInt32(location.Groups[0].Value.Substring(0, 1));
+            int yLoc = Convert.ToInt32(location.Groups[0].Value.Substring(2, 1));
 
             Direction dir = GetDirection(orientation.Groups[0].Value.Substring(0, 1));
             MirrorType type = GetMirrorType(orientation.Groups[0].Value);
 
-            return new Mirror(dir, type);
+            return new Mirror(xLoc, yLoc, dir, type, SetStrategy(type));
         }
 
         private Direction GetDirection(string orientation)
@@ -74,6 +82,22 @@ namespace PioneerCodingProject.Factories
                     default:
                         throw new Exception($"Mirror Type {type} is not defined.");
                 }
+            }
+        }
+
+        private ReflectionStrategy SetStrategy(MirrorType type)
+        {
+            if(type == MirrorType.TwoWay)
+            {
+                return new TwoWayReflection();
+            }
+            else if(type == MirrorType.ReflectiveLeft)
+            {
+                return new OneWayReflectiveLeft();
+            }
+            else
+            {
+                return new OneWayReflectiveRight();
             }
         }
     }

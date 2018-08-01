@@ -12,10 +12,18 @@ namespace PioneerCodingProject.Factories
     {
         private const string LocationPattern = @"^[0-9,0-9]*";
         private const string OrientationPattern = @"[a-zA-Z]+";
-        private Regex LocationRegex;
-        private Regex OrientationRegex;
+        private readonly Regex _locationRegex;
+        private readonly Regex _orientationRegex;
 
         public enum LaserDirection
+        {
+            Up,
+            Down,
+            Left,
+            Right
+        }
+
+        public enum LaserOrientation
         {
             Vertical,
             Horizontal
@@ -23,29 +31,31 @@ namespace PioneerCodingProject.Factories
 
         public LaserFactory()
         {
-            LocationRegex = new Regex(LocationPattern);
-            OrientationRegex = new Regex(OrientationPattern);
+            _locationRegex = new Regex(LocationPattern);
+            _orientationRegex = new Regex(OrientationPattern);
         }
 
         public Laser BuildLaser(string laserDef)
         {
-            Match location = LocationRegex.Match(laserDef);
-            Match orientation = OrientationRegex.Match(laserDef);
+            Match location = _locationRegex.Match(laserDef);
+            Match orientationMatch = _orientationRegex.Match(laserDef);
 
-            location type = GetMirrorType(orientation.Groups[0].Value);
-            LaserDirection dir = GetDirection(orientation.Groups[0].Value.Substring(0, 1));
+            int xLoc = Convert.ToInt32(location.Groups[0].Value.Substring(0, 1));
+            int yLoc = Convert.ToInt32(location.Groups[0].Value.Substring(2, 1));
 
-            return new Laser(, dir);
+            LaserOrientation orientation = GetOrientation(orientationMatch.Groups[0].Value.Substring(0, 1));
+
+            return new Laser(xLoc, yLoc, orientation);
         }
 
-        private LaserDirection GetDirection(string orientation)
+        private LaserOrientation GetOrientation(string orientation)
         {
             switch (orientation)
             {
                 case "V":
-                    return LaserDirection.Vertical;
+                    return LaserOrientation.Vertical;
                 case "H":
-                    return LaserDirection.Horizontal;
+                    return LaserOrientation.Horizontal;
                 default:
                     throw new Exception($"Orientation {orientation} is not defined.");
             }

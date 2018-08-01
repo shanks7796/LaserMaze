@@ -9,19 +9,26 @@ namespace PioneerCodingProject.Classes
 {
     public class Mirror
     {
-        public MirrorFactory.MirrorType Type { get; private set; }
-        public MirrorFactory.Direction Direction { get; private set; }
+        public int XLocation { get; }
+        public int YLocation { get; }
+        public MirrorFactory.MirrorType Type { get; }
+        public MirrorFactory.Direction Direction { get; }
+        private ReflectionStrategy _reflectionStrategy;
 
-        public Mirror(MirrorFactory.Direction direction, MirrorFactory.MirrorType type)
+        public Mirror(int xLocation, int yLocation, MirrorFactory.Direction direction, MirrorFactory.MirrorType type,
+            ReflectionStrategy strategy)
         {
+            XLocation = xLocation;
+            YLocation = yLocation;
             Direction = direction;
             Type = type;
+            _reflectionStrategy = strategy;
         }
 
-        public LaserFactory.LaserDirection CalculateDirection()
+        public LaserFactory.LaserDirection CalculateReflection(LaserFactory.LaserDirection direction)
         {
-            //todo: Calculate direction
-            return LaserFactory.LaserDirection.Vertical;
+            return _reflectionStrategy.Reflect(Direction, direction);
         }
+
     }
 }

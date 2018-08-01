@@ -23,6 +23,8 @@ namespace PioneerCodingProjectUnitTests
             Mirror m = FactoryUnderTest.BuildMirror(mirrorDefUnderTest);
             Assert.AreEqual(MirrorFactory.Direction.Right, m.Direction);
             Assert.AreEqual(MirrorFactory.MirrorType.ReflectiveRight, m.Type);
+            Assert.AreEqual(1, m.XLocation);
+            Assert.AreEqual(2, m.YLocation);
         }
 
         [TestMethod]
@@ -32,6 +34,8 @@ namespace PioneerCodingProjectUnitTests
             Mirror m = FactoryUnderTest.BuildMirror(mirrorDefUnderTest);
             Assert.AreEqual(MirrorFactory.Direction.Right, m.Direction);
             Assert.AreEqual(MirrorFactory.MirrorType.TwoWay, m.Type);
+            Assert.AreEqual(1, m.XLocation);
+            Assert.AreEqual(2, m.YLocation);
         }
 
         [TestMethod]
@@ -47,6 +51,22 @@ namespace PioneerCodingProjectUnitTests
         public void TestUnknownDirection()
         {
             string mirrorDefUnderTest = "1,2QL";
+            Mirror m = FactoryUnderTest.BuildMirror(mirrorDefUnderTest);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
+        public void TestBadMirrorLocation()
+        {
+            string mirrorDefUnderTest = "1,2,3QL";
+            Mirror m = FactoryUnderTest.BuildMirror(mirrorDefUnderTest);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception))]
+        public void TestBadMirrorLocationNotEnoughDetail()
+        {
+            string mirrorDefUnderTest = "1,QL";
             Mirror m = FactoryUnderTest.BuildMirror(mirrorDefUnderTest);
         }
     }

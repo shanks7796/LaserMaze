@@ -46,7 +46,11 @@
     <Compile Include="Classes\Board.cs" />
     <Compile Include="Classes\Laser.cs" />
     <Compile Include="Classes\Mirror.cs" />
+    <Compile Include="Classes\OneWayReflectiveLeft.cs" />
+    <Compile Include="Classes\OneWayReflectiveRight.cs" />
+    <Compile Include="Classes\ReflectionStrategy.cs" />
     <Compile Include="Classes\Room.cs" />
+    <Compile Include="Classes\TwoWayReflection.cs" />
     <Compile Include="Factories\BoardFactory.cs" />
     <Compile Include="Factories\LaserFactory.cs" />
     <Compile Include="Factories\MirrorFactory.cs" />

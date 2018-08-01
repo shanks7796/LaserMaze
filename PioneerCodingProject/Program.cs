@@ -1,12 +1,8 @@
 ﻿using PioneerCodingProject.Classes;
 using PioneerCodingProject.Factories;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace PioneerCodingProject
 {
@@ -14,22 +10,30 @@ namespace PioneerCodingProject
     {
         static void Main(string[] args)
         {
-            string defFilePath = @"C:\Users\foxri\Desktop\board.txt"; //args[0];
-            BoardFactory brdFactory = new BoardFactory();
-            RoomFactory rmFactory = new RoomFactory();
-            MirrorFactory mrFactory = new MirrorFactory();
-            LaserFactory laserFactory = new LaserFactory();
+            string defFilePath = args[0];
 
-            if(IsPathValid(defFilePath))
+            if (IsPathValid(defFilePath))
             {
                 try
                 {
                     string[] lines = File.ReadAllLines(defFilePath);
 
-                    Board board = brdFactory.BuildBoard(lines[0], rmFactory);
+                    BoardFactory brdFactory = new BoardFactory();
+                    Board board = brdFactory.BuildBoard(lines[0]);
 
+                    RoomFactory rmFactory = new RoomFactory();
+                    for (int w = 0; w <= board.Width-1; w++)
+                    {
+                        for (int h = 0; h <= board.Height-1; h++)
+                        {
+                            Room rm = rmFactory.BuildRoom(w, h);
+                            board.Rooms.Add(rm);
+                        }
+                    }
+
+                    MirrorFactory mrFactory = new MirrorFactory();
                     int i = 2;
-                    string line = lines[i]; //mirrors starting spot
+                    string line = lines[i];
                     while (line != "-1")
                     {
                         Mirror mirror = mrFactory.BuildMirror(line);
@@ -38,15 +42,19 @@ namespace PioneerCodingProject
                         board.AddMirror(mirror);
                     }
 
+                    LaserFactory laserFactory = new LaserFactory();
                     Laser laser = laserFactory.BuildLaser(lines[lines.Count() - 2]);
-                    board.Laser = laser;
 
+                    board.SetLaserDirection(laser);
+                    string exitConditions = board.FindExit(laser);
+
+                    Console.WriteLine($" Dimensions of Board: {board.Width}, {board.Height}\n Laser Starting Position {laser.XLoc}, {laser.YLoc}\n Laser Exit is at {exitConditions}");
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    Console.WriteLine($"Error Creating the Board. Please check the board and try again. Exception: {ex.Message} \nStackTrace\n: {ex.StackTrace}");
+                    Console.WriteLine($"Error Occurred! Exception: {ex.Message} \nStackTrace\n: {ex.StackTrace}");
                 }
-            }
+            } 
             else
             {
                 Console.WriteLine("File is not found or is invalid. Please select a new file.");

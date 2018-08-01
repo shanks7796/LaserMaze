@@ -1,35 +1,31 @@
 ﻿using PioneerCodingProject.Factories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PioneerCodingProject.Classes
 {
     public class Laser
     {
-
-        public Room Location { get; private set; }
-
+        public int XLoc { get; set; }
+        public int YLoc { get; set; }
         public LaserFactory.LaserDirection Direction { get; set;}
+        public LaserFactory.LaserOrientation Orientation;
 
-        public event MoveEventHandler Move;
-
-        public Laser()
+        public Laser(int xLocation, int yLocation, LaserFactory.LaserOrientation orientation)
         {
-
+            XLoc = xLocation;
+            YLoc = yLocation;
+            Orientation = orientation;
         }
 
-        public void Fire()
+        public LaserFactory.LaserOrientation GetOrientation()
         {
-            Move(Location.XCoord, Location.YCoord, Direction);
+            if(Direction == LaserFactory.LaserDirection.Up || Direction == LaserFactory.LaserDirection.Down)
+            {
+                return LaserFactory.LaserOrientation.Vertical;
+            }
+            else
+            {
+                return LaserFactory.LaserOrientation.Horizontal;
+            }
         }
-    }
-
-    public class LaserTransitionedArgs : EventArgs
-    {
-        public Room Location { get; set; }
-        public LaserFactory.LaserDirection Direction { get; set; }
     }
 }

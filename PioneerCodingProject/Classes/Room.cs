@@ -11,9 +11,7 @@ namespace PioneerCodingProject.Classes
     {
         public int XCoord { get; }
         public int YCoord { get; }
-        public Mirror RoomMirror { get; private set; }
-
-        public event HitHandler Hit;
+        public Mirror RoomMirror { get; set; }
 
         public Room(int xCoord, int yCoord)
         {
@@ -21,30 +19,13 @@ namespace PioneerCodingProject.Classes
             YCoord = yCoord;
         }
 
-        public void SetMirror(Mirror m)
+        public LaserFactory.LaserDirection LaserEntered(LaserFactory.LaserDirection direction)
         {
-            RoomMirror = m;
-        }
-
-        public LaserFactory.LaserDirection CalcLaserPath(Room laserLoc, LaserFactory.LaserDirection dir)
-        {
-            if (laserLoc.XCoord == XCoord && laserLoc.YCoord == YCoord)
+            if (RoomMirror != null)
             {
-                if(RoomMirror != null)
-                {
-                    return RoomMirror.CalculateDirection();
-                }
-                else
-                {
-                    return dir;
-                }
+                return RoomMirror.CalculateReflection(direction);
             }
-
+            return direction;
         }
-    }
-
-    public class HitEventArgs : EventArgs
-    {
-        public LaserFactory.LaserDirection Direction { get; set; }
     }
 }
